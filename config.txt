@@ -1,0 +1,2 @@
+huePath:/root/lostar/hue-develop/build/env/bin
+hueExecuteCommand:./hue runserver 0.0.0.0:9831
