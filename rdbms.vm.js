@@ -305,7 +305,7 @@ self.chooseServer = function(value, e) {
     };
     $.ajax(request);
   };
-
+  
   self.fetchServers_backup = function() {
     var request = {
       url: '/rdbms/api/servers/',
