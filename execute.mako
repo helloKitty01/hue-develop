@@ -185,6 +185,32 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   </div>
 </div>
 
+<div id="addModal" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <h3>add table</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group" id="saveas-query-name">
+        <label class="control-label">tablename</label>
+        <div class="controls">
+          <input data-bind="value: $root.query.name" type="text" class="input-xlarge">
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">${_('Description')}</label>
+        <div class="controls">
+          <input data-bind="value: $root.query.description" type="text" class="input-xlarge">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
+    <button data-bind="click: modalSaveAsQuery" class="btn btn-primary">${_('Save')}</button>
+  </div>
+</div>
 
 <style type="text/css">
   h1 {
@@ -574,6 +600,17 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     $('#saveAsQueryModal').modal('show');
   }
 
+  function ddl_add() {
+    var query = getHighlightedQuery() || codeMirror.getValue();
+    viewModel.query.query(query);
+    $('#addModal').modal('show');
+  }
+  function ddl_delete() {
+    var query = getHighlightedQuery() || codeMirror.getValue();
+    viewModel.query.query(query);
+    $('#saveAsQueryModal').modal('show');
+  }
+  
   function modalSaveAsQuery() {
     if (viewModel.query.query() && viewModel.query.name()) {
       viewModel.query.id(-1);
@@ -638,7 +675,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       $(data.split(" ")).each(function (cnt, table) {
         if ($.trim(table) != "") {
           var _table = $("<li>");
-          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='trySaveAsQuery()' type='button' class='btn'>+</button><ul class='unstyled'></ul>");
+          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='ddl_add()' type='button' class='btn'>+</button><ul class='unstyled'></ul>");
           _table.data("table", table).attr("id", "navigatorTables_" + table);
           _table.find("a").on("dblclick", function () {
             codeMirror.replaceSelection($.trim($(this).text()) + ' ');
