@@ -258,7 +258,8 @@ self.chooseServer = function(value, e) {
     if (self.query.query() && self.query.name()) {
       var data = ko.mapping.toJS(self.query);
       data['desc'] = data['description'];
-      data['server'] = 'rdbms'+self.server().name();
+      //data['server'] =self.server().name();
+	  data['server'] = 'mysql';
       data['database'] = self.database();
       var url = '/rdbms/api/query/';
       if (self.query.id() && self.query.id() != -1) {
