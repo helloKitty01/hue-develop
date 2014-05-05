@@ -179,7 +179,7 @@ self.chooseServer = function(value, e) {
     $.ajax(request);
   };
 
-  self.explainQuery = function() {
+  self.explainQuery_backup = function() {
     var data = ko.mapping.toJS(self.query);
     data.database = self.database();
     data.server = self.server().name();
@@ -203,7 +203,39 @@ self.chooseServer = function(value, e) {
       data: data
     };
     $.ajax(request);
-  };  
+  }; 
+
+  self.explainQuery = function() {
+    var data = ko.mapping.toJS(self.query);
+	var sql=data.query;
+    data.database = self.database();
+    data.server = self.server().name();
+    var request = {
+      url: 'http://10.60.1.149:4567/datasources/'+data.server+'/execute?userid=1&sql=explain '+sql,
+//	  data:{userid:1,sql:'select * from aaa'},
+//    dataType: 'text',
+      dataType:'jsonp',
+	  jsonp:'jsonpcallback',
+	  jsonpcallback:'skycallback',
+      type: 'GET',
+      success: function(data) {
+	  //eval('var data='+data);
+        self.query.errors.removeAll();
+        if (data.status === 0) {
+          $(document).trigger('execute.query', data);
+          self.updateResults(data.results);
+          self.query.id(data.design);
+          self.resultsEmpty(data.results.rows.length === 0);
+          $(document).trigger('executed.query', data);
+        } else {
+          self.query.errors.push(data.message);
+        }
+      },
+      error: error_fn,
+      data: data
+    };
+    $.ajax(request);
+  };    
   
   self.fetchQuery = function(id) {
     var _id = id || self.query.id();
