@@ -638,7 +638,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       $(data.split(" ")).each(function (cnt, table) {
         if ($.trim(table) != "") {
           var _table = $("<li>");
-          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><ul class='unstyled'></ul>");
+          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='trySaveAsQuery()' type='button' class='btn'>+</button><ul class='unstyled'></ul>");
           _table.data("table", table).attr("id", "navigatorTables_" + table);
           _table.find("a").on("dblclick", function () {
             codeMirror.replaceSelection($.trim($(this).text()) + ' ');
