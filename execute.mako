@@ -608,7 +608,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     $('#saveAsQueryModal').modal('show');
   }
   function add_column(){
-        $('#hello').find("ul").append("<li><input  type='text' name='columnValues' class='input-xlarge'></li><select><option>int</option><option>String</option><option>char</option><option>bigint</option><option>float</option></select>");
+        $('#hello').find("ul").append("<li><input  type='text' name='columnValues[]' class='input-xlarge'></li><select name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input type=checkbox value='yes' name='iskey[]'/>No:<input type=checkbox value='no' name='iskey[]'/>");
  }
   
   function modalSaveAsQuery() {
