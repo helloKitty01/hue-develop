@@ -183,6 +183,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
     <button data-bind="click: modalSaveAsQuery" class="btn btn-primary">${_('Save')}</button>
+	<button data-bind="click: modalAddTable" class="btn btn-primary">${_('Save')}</button>
   </div>
 </div>
 
@@ -192,21 +193,22 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     <h3>创建新表</h3>
   </div>
   <div class="modal-body">
-    <form class="form-horizontal" id="addTableFrom" action="http://10.60.1.149:4567/addtable?userid=1" method="POST">
-		<input type="hidden" name="server" data-bind="value:$root.server().name()"/>
-		<label>表名:</label> <input name="tableName" placeholder="MyTable" type="text"/>
+    <form class="form-horizontal" id="addTableFrom"  method="POST">
+		<input type="hidden" name="server" data-bind="text:$root.server().name()"/>
+		<label>表名:</label> <input data-bind="value: $root.ddl.tableName" name="tableName" value="MyTable" type="text"/>
 		<label>列名</label>
 	<div  id="hello">
 	  <ul>
-	</ul>
+	  </ul>
 	 <a class="btn" onclick="add_column()"><i class="fa fa-plus-circle"></i> Add Column</a>
-    </div>
-  </div>
+   </div>
+    </form>
+	</div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
-    <button  type="submit"  class="btn btn-primary">${_('Save')}</button>
+    <button onclick="modalAddTable()" class="btn btn-primary">${_('Save')}</button>
   </div>
-  </form>
+
 </div>
 
 <style type="text/css">
@@ -625,7 +627,11 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     }
   }
   function modalAddTable() {
-  alert(viewModel.selectedServer());
+    if (viewModel.ddl.tableName()) {
+	alert(viewModel.ddl.tableName());
+    }else{
+	alert('hello');
+  }
   }
 
   function checkLastDatabase(server, database) {

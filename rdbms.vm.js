@@ -17,6 +17,16 @@
 
 function RdbmsViewModel() {
   var self = this;
+  
+  self.ddl = ko.mapping.fromJS({
+    'server': '',
+	'table':'',
+	'tableName':'',
+	'column':'',
+    'columns': [],
+	'types': [],
+	'iskeys': []
+  });
 
   self.servers = ko.observableArray();
   self.selectedServer = ko.observable(0);
