@@ -193,7 +193,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   </div>
   <div class="modal-body">
     <form class="form-horizontal" id="addTableFrom" action="http://10.60.1.149:4567/addtable?userid=1" method="POST">
-		<input type="hidden" name="server" data-bind="value:$root.selectedServer"/>
+		<input type="hidden" name="server" data-bind="value:$root.server().name()"/>
 		<label>表名:</label> <input name="tableName" placeholder="MyTable" type="text"/>
 		<label>列名</label>
 	<div  id="hello">
