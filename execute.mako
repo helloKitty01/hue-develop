@@ -195,13 +195,33 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       <div class="control-group" id="saveas-query-name">
         <label class="control-label">tablename</label>
         <div class="controls">
-          <input data-bind="value: $root.query.name" type="text" class="input-xlarge">
+          <input type="text" class="input-xlarge">
         </div>
       </div>
       <div class="control-group">
-        <label class="control-label">${_('Description')}</label>
+        <label class="control-label">ColumnName</label>
         <div class="controls">
-          <input data-bind="value: $root.query.description" type="text" class="input-xlarge">
+          <input  type="text" class="input-xlarge">
+		  <select>  
+		   <option>int</option>  
+		   <option>String</option>  
+		   <option>char</option>  
+		   <option>bigint</option>  
+		   <option>float</option>  
+		  </select> 
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">ColumnName</label>          
+        <div class="controls">
+		  <input  type="text" class="input-xlarge">
+		  <select>  
+		   <option>int</option>  
+		   <option>String</option>  
+		   <option>char</option>  
+		   <option>bigint</option>  
+		   <option>float</option>  
+		  </select>  
         </div>
       </div>
     </form>
