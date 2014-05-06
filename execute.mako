@@ -143,6 +143,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
         <div class="card-body">
           <p>
             <input id="navigatorSearch" type="text" placeholder="${ _('Table name...') }" style="width:90%"/>
+			<a href="#" role="button" onclick='ddl_add()' class="btn"><i class='fa fa-plus-circle'></i> 新建表</a>
             <span id="navigatorNoTables">${_('The selected database has no tables.')}</span>
             <ul id="navigatorTables" class="unstyled"></ul>
             <div id="navigatorLoader">
@@ -188,48 +189,24 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
 <div id="addModal" class="modal hide fade">
   <div class="modal-header">
     <a href="#" class="close" data-dismiss="modal">&times;</a>
-    <h3>add table</h3>
+    <h3>创建新表</h3>
   </div>
   <div class="modal-body">
-    <form class="form-horizontal">
-      <div class="control-group" id="saveas-query-name">
-        <label class="control-label">tablename</label>
-        <div class="controls">
-          <input type="text" class="input-xlarge">
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label">ColumnName</label>
-        <div class="controls">
-          <input  type="text" class="input-xlarge">
-		  <select>  
-		   <option>int</option>  
-		   <option>String</option>  
-		   <option>char</option>  
-		   <option>bigint</option>  
-		   <option>float</option>  
-		  </select> 
-        </div>
-      </div>
-      <div class="control-group">
-        <label class="control-label">ColumnName</label>          
-        <div class="controls">
-		  <input  type="text" class="input-xlarge">
-		  <select>  
-		   <option>int</option>  
-		   <option>String</option>  
-		   <option>char</option>  
-		   <option>bigint</option>  
-		   <option>float</option>  
-		  </select>  
-        </div>
-      </div>
-    </form>
+    <form class="form-horizontal" id="addTableFrom" action="http://10.60.1.149:4567/addtable?userid=1" method="POST">
+		<input type="hidden" name="server" data-bind="value:$root.selectedServer"/>
+		<label>表名:</label> <input name="tableName" placeholder="MyTable" type="text"/>
+		<label>列名</label>
+	<div  id="hello">
+	  <ul>
+	</ul>
+	 <a class="btn" onclick="add_column()"><i class="fa fa-plus-circle"></i> Add Column</a>
+    </div>
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
-    <button data-bind="click: modalSaveAsQuery" class="btn btn-primary">${_('Save')}</button>
+    <button  type="submit"  class="btn btn-primary">${_('Save')}</button>
   </div>
+  </form>
 </div>
 
 <style type="text/css">
@@ -630,6 +607,9 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     viewModel.query.query(query);
     $('#saveAsQueryModal').modal('show');
   }
+  function add_column(){
+        $('#hello').find("ul").append("<li><input  type='text' name='columnValues' class='input-xlarge'></li><select><option>int</option><option>String</option><option>char</option><option>bigint</option><option>float</option></select>");
+ }
   
   function modalSaveAsQuery() {
     if (viewModel.query.query() && viewModel.query.name()) {
@@ -643,6 +623,9 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     } else {
       $('#saveas-query-name').addClass('error');
     }
+  }
+  function modalAddTable() {
+  alert(viewModel.selectedServer());
   }
 
   function checkLastDatabase(server, database) {
@@ -695,7 +678,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       $(data.split(" ")).each(function (cnt, table) {
         if ($.trim(table) != "") {
           var _table = $("<li>");
-          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='ddl_add()' type='button' class='btn'>+</button><ul class='unstyled'></ul>");
+          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='ddl_add()' type='button' class='btn'>+</button><button onclick='ddl_add()' type='button' class='btn'>-</button><ul class='unstyled'></ul>");
           _table.data("table", table).attr("id", "navigatorTables_" + table);
           _table.find("a").on("dblclick", function () {
             codeMirror.replaceSelection($.trim($(this).text()) + ' ');
@@ -710,7 +693,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
               $(columns.split(" ")).each(function (iCnt, col) {
                 if ($.trim(col) != "" && $.trim(col) != "*") {
                   var _column = $("<li>");
-                  _column.html("<a href='#' style='padding-left:10px'><i class='fa fa-columns'></i> " + col + "</a>");
+                  _column.html("<a href='#' style='padding-left:10px'><i class='fa fa-columns'></i> " + col + "</a><button onclick='ddl_add()' type='button' class='btn'>-</button>");
                   _column.appendTo(_table.find("ul"));
                   _column.on("dblclick", function () {
                     codeMirror.replaceSelection($.trim(col) + ', ');
