@@ -105,7 +105,6 @@ function RdbmsViewModel() {
   };
 
   self.updateDatabases = function(databases) {
-	renderNavigator();
     self.databases(databases);
 
     var key = 'hueRdbmsLastDatabase-' + self.server().name();
