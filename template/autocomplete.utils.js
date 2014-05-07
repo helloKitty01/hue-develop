@@ -38,7 +38,7 @@ function rdbms_jsoncalls(options) {
 }
 
 function rdbms_hasExpired(timestamp){
-  var TIME_TO_LIVE_IN_MILLIS = 60; // 10 minutes
+  var TIME_TO_LIVE_IN_MILLIS = 600000; // 10 minutes
   return (new Date()).getTime() - timestamp > TIME_TO_LIVE_IN_MILLIS;
 }
 

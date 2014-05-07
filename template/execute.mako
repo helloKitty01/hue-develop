@@ -687,9 +687,9 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   }
 
   function renderNavigator() {
-    $("#navigatorTables").empty();
-    $("#navigatorLoader").show();
+ //   $("#navigatorLoader").show();
     rdbms_getTables(viewModel.server().name(), viewModel.database(), function (data) {  //preload tables for the default db
+	  $("#navigatorTables").empty();
       $(data.split(" ")).each(function (cnt, table) {
         if ($.trim(table) != "") {
           var _table = $("<li>");
