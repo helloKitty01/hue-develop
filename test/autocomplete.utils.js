@@ -21,13 +21,10 @@ function rdbms_jsoncalls(options) {
     }
     if (options.database) {
       if (options.table) {
-//       $.getJSON(RDBMS_AUTOCOMPLETE_BASE_URL + "/servers/" + options.server + "/databases/" + options.database + "/tables/" + options.table + "/columns", options.onDataReceived);
-//		$.getJSON('http://10.60.1.149:4567/datasources/'+options.server+'/column?userid=1&table='+options.table+'&callback=?', options.onDataReceived);
-		$.getJSON('http://10.60.1.149:4567/datasources/'+options.server+'/'+options.table+'/column?userid=1&callback=?', options.onDataReceived);
+        $.getJSON('http://10.60.1.149:4567/datasources/'+options.server+'/'+options.table+'/column?userid=1&callback=?', options.onDataReceived);
       }
       else {
- //     $.getJSON(RDBMS_AUTOCOMPLETE_BASE_URL + "/servers/" + options.server + "/databases/" + options.database + "/tables", options.onDataReceived);
-		$.getJSON('http://10.60.1.149:4567/datasources/'+options.server+'/showtable?userid=1&callback=?', options.onDataReceived);
+        $.getJSON('http://10.60.1.149:4567/datasources/'+options.server+'/showtable?userid=1&callback=?', options.onDataReceived);
       }
     }
   }
