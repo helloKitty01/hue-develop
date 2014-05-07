@@ -143,7 +143,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
         <div class="card-body">
           <p>
             <input id="navigatorSearch" type="text" placeholder="${ _('Table name...') }" style="width:90%"/>
-			<a href="#" role="button" onclick='ddl_add()' class="btn"><i class='fa fa-plus-circle'></i> 新建表</a>
+			<a href="#" role="button" onclick='ddl_addTable()' class="btn"><i class='fa fa-plus-circle'></i> 新建表</a>
             <span id="navigatorNoTables">${_('The selected database has no tables.')}</span>
             <ul id="navigatorTables" class="unstyled"></ul>
             <div id="navigatorLoader">
@@ -185,6 +185,37 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     <button data-bind="click: modalSaveAsQuery" class="btn btn-primary">${_('Save')}</button>
   </div>
 </div>
+
+
+<div id="addTableModal" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <h3>创建新表</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group" id="saveas-query-name">
+        <label class="control-label">表名：</label>
+        <div class="controls">
+          <input data-bind="value: $root.query.name" type="text" class="input-xlarge">
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">列名</label>
+        <div class="controls">
+		   <ul>
+	       </ul>
+	       <a class="btn" onclick="add_column()"><i class="fa fa-plus-circle"></i> Add Column</a>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
+    <button onclick="modalAddTable()" class="btn btn-primary">${_('Save')}</button>
+  </div>
+</div>
+
 
 
 <style type="text/css">
@@ -573,6 +604,12 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     var query = getHighlightedQuery() || codeMirror.getValue();
     viewModel.query.query(query);
     $('#saveAsQueryModal').modal('show');
+  }
+  
+  function ddl_addTable() {
+    var query = getHighlightedQuery() || codeMirror.getValue();
+    viewModel.query.query(query);
+    $('#addTableModal').modal('show');
   }
 
   function modalSaveAsQuery() {
