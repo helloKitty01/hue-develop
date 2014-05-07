@@ -21,7 +21,7 @@ function RdbmsViewModel() {
   self.ddl = ko.mapping.fromJS({
     'server': '',
 	'table':'',
-	'tableName':'',
+	'tableName':null,
 	'column':'',
     'columns': [],
 	'types': [],

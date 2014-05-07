@@ -141,7 +141,6 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
         <a id="refreshNavigator" href="#" title="${_('Manually refresh the table list')}" rel="tooltip" data-placement="left" class="pull-right" style="margin:10px"><i class="fa fa-refresh"></i></a>
         <h1 class="card-heading simple"><i class="fa fa-compass"></i> ${_('Navigator')}</h1>
         <div class="card-body">
-          <p>
             <input id="navigatorSearch" type="text" placeholder="${ _('Table name...') }" style="width:90%"/>
 			<a href="#" role="button" onclick='ddl_add()' class="btn"><i class='fa fa-plus-circle'></i> 新建表</a>
             <span id="navigatorNoTables">${_('The selected database has no tables.')}</span>
@@ -150,7 +149,6 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
               <!--[if !IE]><!--><i class="fa fa-spinner fa-spin" style="font-size: 20px; color: #DDD"></i><!--<![endif]-->
               <!--[if IE]><img src="/static/art/spinner.gif" /><![endif]-->
             </div>
-          </p>
         </div>
       </div>
   </div>
@@ -183,7 +181,6 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
     <button data-bind="click: modalSaveAsQuery" class="btn btn-primary">${_('Save')}</button>
-	<button data-bind="click: modalAddTable" class="btn btn-primary">${_('Save')}</button>
   </div>
 </div>
 
@@ -630,7 +627,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     if (viewModel.ddl.tableName()) {
 	alert(viewModel.ddl.tableName());
     }else{
-	alert('hello');
+	alert(viewModel.ddl.tableName());
   }
   }
 
@@ -805,7 +802,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       // Automatic results grower
       var dataTableEl = $(".dataTables_wrapper");
       var index = 0;
-      var pageSize = 10;
+      var pageSize = 100;
       dataTableEl.on("scroll", function (e) {
         if (dataTableEl.scrollTop() + dataTableEl.outerHeight() + 20 > dataTableEl[0].scrollHeight && dataTable) {
           addResults(viewModel, dataTable, index, pageSize);
