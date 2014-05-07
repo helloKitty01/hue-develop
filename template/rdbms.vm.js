@@ -126,6 +126,7 @@ function RdbmsViewModel() {
     });
     $.totalStorage('hueRdbmsLastServer', self.server().name());
     self.fetchDatabases();
+	self.updateDatabases(self.databases()[0]);
   };
 
   self.chooseDatabase = function(value, e) {
@@ -144,12 +145,15 @@ function RdbmsViewModel() {
 
   self.explainQuery = function() {
     var data = ko.mapping.toJS(self.query);
+	var sql=data.query;
     data.database = self.database();
     data.server = self.server().name();
     var request = {
-      url: '/rdbms/api/explain/',
-      dataType: 'json',
-      type: 'POST',
+      url: 'http://10.60.1.149:4567/datasources/'+data.server+'/execute?userid=1&sql=explain '+sql,
+      dataType:'jsonp',
+	  jsonp:'jsonpcallback',
+	  jsonpcallback:'skycallback',
+      type: 'GET',
       success: function(data) {
         self.query.errors.removeAll();
         if (data.status === 0) {
@@ -213,12 +217,15 @@ function RdbmsViewModel() {
 
   self.executeQuery = function() {
     var data = ko.mapping.toJS(self.query);
+	var sql=data.query;
     data.database = self.database();
     data.server = self.server().name();
     var request = {
-      url: '/rdbms/api/execute/',
-      dataType: 'json',
-      type: 'POST',
+      url: 'http://10.60.1.149:4567/datasources/'+data.server+'/execute?userid=1&sql='+sql,
+      dataType: 'jsonp',
+	  jsonp:'jsonpcallback',
+	  jsonpcallback:'skycallback',
+      type: 'GET',
       success: function(data) {
         self.query.errors.removeAll();
         if (data.status === 0) {
@@ -239,8 +246,9 @@ function RdbmsViewModel() {
 
   self.fetchServers = function() {
     var request = {
-      url: '/rdbms/api/servers/',
-      dataType: 'json',
+      url: 'http://10.60.1.149:4567/getsources?userid=1&callback=?',
+      dataType:'jsonp',
+	  jsonp:'callback',
       type: 'GET',
       success: function(data) {
         self.updateServers(data.servers);
@@ -254,8 +262,9 @@ function RdbmsViewModel() {
   self.fetchDatabases = function() {
     if (self.server()) {
       var request = {
-        url: '/rdbms/api/servers/' + self.server().name() + '/databases/',
-        dataType: 'json',
+        url: 'http://10.60.1.149:4567/default',
+		dataType:'jsonp',
+		jsonp:'callback',
         type: 'GET',
         success: function(data) {
           self.updateDatabases(data.databases);

@@ -42,7 +42,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
         </li>
         <li>&nbsp;&nbsp;&nbsp;&nbsp;</li>
         <li>
-          <div style="display: inline" class="dropdown">
+          <div style="display: none" class="dropdown">
             ${_('Database')}&nbsp;<a data-toggle="dropdown" href="#"><strong data-bind="text: $root.database"></strong> <i class="fa fa-caret-down"></i></a>
             <ul data-bind="foreach: $root.databases" class="dropdown-menu">
               <li data-bind="click: $root.chooseDatabase, text: $data" class="selectable"></li>
@@ -143,6 +143,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
         <div class="card-body">
           <p>
             <input id="navigatorSearch" type="text" placeholder="${ _('Table name...') }" style="width:90%"/>
+			<a href="#" role="button" onclick='ddl_add()' class="btn"><i class='fa fa-plus-circle'></i> 新建表</a>
             <span id="navigatorNoTables">${_('The selected database has no tables.')}</span>
             <ul id="navigatorTables" class="unstyled"></ul>
             <div id="navigatorLoader">
