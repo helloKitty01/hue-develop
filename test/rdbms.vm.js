@@ -17,16 +17,6 @@
 
 function RdbmsViewModel() {
   var self = this;
-  
-  self.ddl = ko.mapping.fromJS({
-    'server': '',
-	'table':'',
-	'tableName':null,
-	'column':'',
-    'columns': [],
-	'types': [],
-	'iskeys': []
-  });
 
   self.servers = ko.observableArray();
   self.selectedServer = ko.observable(0);
@@ -128,7 +118,7 @@ function RdbmsViewModel() {
     self.server(design.server);
   };
 
-  self.chooseServer_backup = function(value, e) {
+  self.chooseServer = function(value, e) {
     $.each(self.servers(), function(index, server) {
       if (server.name() == value.name()) {
         self.selectedServer(index);
@@ -136,17 +126,6 @@ function RdbmsViewModel() {
     });
     $.totalStorage('hueRdbmsLastServer', self.server().name());
     self.fetchDatabases();
-  };
-  
-self.chooseServer = function(value, e) {
-    $.each(self.servers(), function(index, server) {
-      if (server.name() == value.name()) {
-        self.selectedServer(index);
-      }
-    });
-    $.totalStorage('hueRdbmsLastServer', self.server().name());
-    self.fetchDatabases();
-	self.updateDatabases(self.databases()[0]);
   };
 
   self.chooseDatabase = function(value, e) {
@@ -163,14 +142,17 @@ self.chooseServer = function(value, e) {
     }
   };
 
-  self.explainQuery_backup = function() {
+  self.explainQuery = function() {
     var data = ko.mapping.toJS(self.query);
+	var sql=data.query;
     data.database = self.database();
     data.server = self.server().name();
     var request = {
-      url: '/rdbms/api/explain/',
-      dataType: 'json',
-      type: 'POST',
+      url: 'http://10.60.1.149:4567/datasources/'+data.server+'/execute?userid=1&sql=explain '+sql,
+      dataType:'jsonp',
+	  jsonp:'jsonpcallback',
+	  jsonpcallback:'skycallback',
+      type: 'GET',
       success: function(data) {
         self.query.errors.removeAll();
         if (data.status === 0) {
@@ -189,64 +171,6 @@ self.chooseServer = function(value, e) {
     $.ajax(request);
   };
 
-  self.explainQuery_backup = function() {
-    var data = ko.mapping.toJS(self.query);
-    data.database = self.database();
-    data.server = self.server().name();
-    var request = {
-      url: '/rdbms/api/explain/',
-      dataType: 'json',
-      type: 'POST',
-      success: function(data) {
-        self.query.errors.removeAll();
-        if (data.status === 0) {
-          $(document).trigger('explain.query', data);
-          self.updateResults(data.results);
-          self.query.id(data.design);
-          self.resultsEmpty(data.results.rows.length === 0);
-          $(document).trigger('explained.query', data);
-        } else {
-          self.query.errors.push(data.message);
-        }
-      },
-      error: error_fn,
-      data: data
-    };
-    $.ajax(request);
-  }; 
-
-  self.explainQuery = function() {
-    var data = ko.mapping.toJS(self.query);
-	var sql=data.query;
-    data.database = self.database();
-    data.server = self.server().name();
-    var request = {
-      url: 'http://10.60.1.149:4567/datasources/'+data.server+'/execute?userid=1&sql=explain '+sql,
-//	  data:{userid:1,sql:'select * from aaa'},
-//    dataType: 'text',
-      dataType:'jsonp',
-	  jsonp:'jsonpcallback',
-	  jsonpcallback:'skycallback',
-      type: 'GET',
-      success: function(data) {
-	  //eval('var data='+data);
-        self.query.errors.removeAll();
-        if (data.status === 0) {
-          $(document).trigger('execute.query', data);
-          self.updateResults(data.results);
-          self.query.id(data.design);
-          self.resultsEmpty(data.results.rows.length === 0);
-          $(document).trigger('executed.query', data);
-        } else {
-          self.query.errors.push(data.message);
-        }
-      },
-      error: error_fn,
-      data: data
-    };
-    $.ajax(request);
-  };    
-  
   self.fetchQuery = function(id) {
     var _id = id || self.query.id();
     if (_id && _id != -1) {
@@ -268,8 +192,7 @@ self.chooseServer = function(value, e) {
     if (self.query.query() && self.query.name()) {
       var data = ko.mapping.toJS(self.query);
       data['desc'] = data['description'];
-      //data['server'] =self.server().name();
-	  data['server'] = 'mysql';
+      data['server'] = self.server().name();
       data['database'] = self.database();
       var url = '/rdbms/api/query/';
       if (self.query.id() && self.query.id() != -1) {
@@ -291,47 +214,18 @@ self.chooseServer = function(value, e) {
     }
   };
 
-  self.executeQuery_backup = function() {
-    var data = ko.mapping.toJS(self.query);
-    data.database = self.database();
-    data.server = self.server().name();
-    var request = {
-      url: '/rdbms/api/execute/',
-      dataType: 'json',
-      type: 'POST',
-      success: function(data) {
-        self.query.errors.removeAll();
-        if (data.status === 0) {
-          $(document).trigger('execute.query', data);
-          self.updateResults(data.results);
-          self.query.id(data.design);
-          self.resultsEmpty(data.results.rows.length === 0);
-          $(document).trigger('executed.query', data);
-        } else {
-          self.query.errors.push(data.message);
-        }
-      },
-      error: error_fn,
-      data: data
-    };
-    $.ajax(request);
-  };
-  
- self.executeQuery = function() {
+  self.executeQuery = function() {
     var data = ko.mapping.toJS(self.query);
 	var sql=data.query;
     data.database = self.database();
     data.server = self.server().name();
     var request = {
       url: 'http://10.60.1.149:4567/datasources/'+data.server+'/execute?userid=1&sql='+sql,
-//	  data:{userid:1,sql:'select * from aaa'},
-//    dataType: 'text',
-      dataType:'jsonp',
+      dataType: 'jsonp',
 	  jsonp:'jsonpcallback',
 	  jsonpcallback:'skycallback',
       type: 'GET',
       success: function(data) {
-	  //eval('var data='+data);
         self.query.errors.removeAll();
         if (data.status === 0) {
           $(document).trigger('execute.query', data);
@@ -348,11 +242,12 @@ self.chooseServer = function(value, e) {
     };
     $.ajax(request);
   };
-  
-  self.fetchServers_backup = function() {
+
+  self.fetchServers = function() {
     var request = {
-      url: '/rdbms/api/servers/',
-      dataType: 'json',
+      url: 'http://10.60.1.149:4567/getsources?userid=1&callback=?',
+      dataType:'jsonp',
+	  jsonp:'callback',
       type: 'GET',
       success: function(data) {
         self.updateServers(data.servers);
@@ -362,43 +257,8 @@ self.chooseServer = function(value, e) {
     };
     $.ajax(request);
   };
-  
-self.fetchServers = function() {
-    var request = {
-      url: 'http://10.60.1.149:4567/getsources?userid=1&callback=?',
-//	  url: 'http://10.60.1.149:4567/datasources/8/showtable?userid=1&callback=?',
-//	  data:{userid:1,sql:'select * from aaa'},
-//    dataType: 'text',
-      dataType:'jsonp',
-	  jsonp:'callback',
-	  //jsonpcallback:'skycallback',
-      type: 'GET',
-      success: function(data) {
-	    //eval("var sky={'servers':{'1':'testname','2':'a','3':'name3','4':'name3','5':'name5','6':'addfromform','7':'heheh','8':'mygp','9':'mysql'}}");
-        self.updateServers(data.servers);
-        self.fetchDatabases();
-      },
-      error: error_fn,
-    };	
-    $.ajax(request);
-  };
 
-  self.fetchDatabases_backup = function() {
-    if (self.server()) {
-      var request = {
-        url: '/rdbms/api/servers/' + self.server().name() + '/databases/',
-        dataType: 'json',
-        type: 'GET',
-        success: function(data) {
-          self.updateDatabases(data.databases);
-        },
-        error: error_fn
-      };
-      $.ajax(request);
-    }
-  };
-  
-self.fetchDatabases = function() {
+  self.fetchDatabases = function() {
     if (self.server()) {
       var request = {
         url: 'http://10.60.1.149:4567/default',
