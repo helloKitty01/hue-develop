@@ -197,22 +197,22 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       <div class="control-group" id="saveas-query-name">
         <label class="control-label">表名：</label>
         <div class="controls">
-          <input data-bind="value: $root.query.name" type="text" class="input-xlarge">
+          <input data-bind="value: $root.ddl.tableName" type="text" class="input-xlarge">
         </div>
       </div>
       <div class="control-group">
         <label class="control-label">列名</label>
-        <div class="controls">
+        <div class="controls" id="columns">
 		   <ul>
 	       </ul>
-	       <a class="btn" onclick="add_column()"><i class="fa fa-plus-circle"></i> Add Column</a>
+	       <a class="btn" data-bind="click:add_column"><i class="fa fa-plus-circle"></i> Add Column</a>
         </div>
       </div>
     </form>
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
-    <button onclick="modalAddTable()" class="btn btn-primary">${_('Save')}</button>
+    <button data-bind="click:modalAddTable" class="btn btn-primary">${_('Save')}</button>
   </div>
 </div>
 
@@ -607,11 +607,28 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   }
   
   function ddl_addTable() {
-    var query = getHighlightedQuery() || codeMirror.getValue();
-    viewModel.query.query(query);
     $('#addTableModal').modal('show');
   }
-
+  function add_column(){
+        $('#columns').find("ul").append("<li><input  type='text' class='col' name='columnValues[]'><select class='col_type' name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input class='col_checkbox' type=checkbox value='yes' name='iskey[]'/></li>");
+ }
+  function modalAddTable() {
+	viewModel.ddl.server(viewModel.server().name());
+	viewModel.ddl.columns.removeAll();
+	for (var i=0;i<$('.col').size();i++)
+	{
+		viewModel.ddl.columns.push(
+			{
+				'columnName':$('.col')[i].value,
+				'columnType':$('.col_type')[i].value,
+				'typeBytes':10,
+				'iskey':$('.col_checkbox')[i].checked				
+			}
+		);
+	}
+	viewModel.createTable();
+	$('#addTableModal').modal('hide');
+  }
   function modalSaveAsQuery() {
     if (viewModel.query.query() && viewModel.query.name()) {
       viewModel.query.id(-1);

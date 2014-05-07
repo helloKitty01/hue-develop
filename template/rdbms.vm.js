@@ -22,6 +22,11 @@ function RdbmsViewModel() {
   self.selectedServer = ko.observable(0);
   self.databases = ko.observableArray();
   self.selectedDatabase = ko.observable(0);
+  self.ddl=ko.mapping.fromJS({
+	'server':-1,
+	'tableName':null,
+	'columns': []
+  });
   self.query = ko.mapping.fromJS({
     'id': -1,
     'query': '',
@@ -100,6 +105,7 @@ function RdbmsViewModel() {
   };
 
   self.updateDatabases = function(databases) {
+	renderNavigator();
     self.databases(databases);
 
     var key = 'hueRdbmsLastDatabase-' + self.server().name();
@@ -255,6 +261,30 @@ function RdbmsViewModel() {
         self.fetchDatabases();
       },
       error: error_fn
+    };
+    $.ajax(request);
+  };
+  
+  self.createTable = function() {
+	var data = ko.mapping.toJS(viewModel.ddl);
+	var request = {
+      url: 'http://10.60.1.149:4567/addtable?userid=1',
+      dataType:'jsonp',
+	  jsonp:'jsonpcallback',
+	  jsonpcallback:'skycallback',
+      type: 'GET',
+      success: function(data) {
+	  if(data['status']==0){
+		self.updateDatabases(self.databases()[0]);
+		$.jHueNotify.info("新表创建成功！");
+	  }
+	  if(data['status']==-1){
+		data['error']=data['message'];
+		$(document).trigger('server.error', data);
+	  }
+      },
+      error: error_fn,
+      data: data
     };
     $.ajax(request);
   };
