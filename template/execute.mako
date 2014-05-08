@@ -53,7 +53,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     </div>
   </div>
   <div class="row-fluid">
-    <div class="span10">
+    <div class="span8">
     <div id="query">
       <div class="card card-small">
         <div style="margin-bottom: 30px">
@@ -135,7 +135,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       </div>
     </div>
   </div>
-  <div class="span2" id="navigator">
+  <div class="span4" id="navigator">
       <div class="card card-small">
         <a href="#" title="${_('Double click on a table name or field to insert it in the editor')}" rel="tooltip" data-placement="left" class="pull-right" style="margin:10px;margin-left: 0"><i class="fa fa-question-circle"></i></a>
         <a id="refreshNavigator" href="#" title="${_('Manually refresh the table list')}" rel="tooltip" data-placement="left" class="pull-right" style="margin:10px"><i class="fa fa-refresh"></i></a>
@@ -213,6 +213,17 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
     <button data-bind="click:modalAddTable" class="btn btn-primary">${_('Save')}</button>
+  </div>
+</div>
+
+<div id="deleteTableModal" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <h3>是否确定删除该表？确定继续</h3>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
+    <button data-bind="click:modalDeleteTable" class="btn btn-primary">确定</button>
   </div>
 </div>
 
@@ -609,6 +620,11 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   function ddl_addTable() {
     $('#addTableModal').modal('show');
   }
+  
+  function ddl_deleteTable(table) {
+    viewModel.ddl.tableName(table);
+    $('#deleteTableModal').modal('show');
+  }
   function add_column(){
         $('#columns').find("ul").append("<li><input  type='text' class='col' name='columnValues[]'><select class='col_type' name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input class='col_checkbox' type=checkbox value='yes' name='iskey[]'/></li>");
  }
@@ -629,6 +645,12 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
 	viewModel.createTable();
 	$('#addTableModal').modal('hide');
   }
+  function modalDeleteTable() {
+	viewModel.ddl.server(viewModel.server().name());
+	viewModel.deleteTable();
+	$('#deleteTableModal').modal('hide');
+  }
+
   function modalSaveAsQuery() {
     if (viewModel.query.query() && viewModel.query.name()) {
       viewModel.query.id(-1);
@@ -693,7 +715,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       $(data.split(" ")).each(function (cnt, table) {
         if ($.trim(table) != "") {
           var _table = $("<li>");
-          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><ul class='unstyled'></ul>");
+          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='ddl_deleteTable(\"" + table + "\")' type='button' class='btn'>删除</button><ul class='unstyled'></ul>");
           _table.data("table", table).attr("id", "navigatorTables_" + table);
           _table.find("a").on("dblclick", function () {
             codeMirror.replaceSelection($.trim($(this).text()) + ' ');

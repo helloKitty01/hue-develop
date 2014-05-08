@@ -287,6 +287,30 @@ function RdbmsViewModel() {
     };
     $.ajax(request);
   };
+  
+  self.deleteTable = function() {
+	var data = ko.mapping.toJS(viewModel.ddl);
+	var request = {
+      url: 'http://10.60.1.149:4567/deltable?userid=1',
+      dataType:'jsonp',
+	  jsonp:'jsonpcallback',
+	  jsonpcallback:'skycallback',
+      type: 'GET',
+      success: function(data) {
+	  if(data['status']==0){
+		self.updateDatabases(self.databases()[0]);
+		$.jHueNotify.info("表"+self.ddl.tableName()+"删除成功！");
+	  }
+	  if(data['status']==-1){
+		data['error']=data['message'];
+		$(document).trigger('server.error', data);
+	  }
+      },
+      error: error_fn,
+      data: data
+    };
+    $.ajax(request);
+  };
 
   self.fetchDatabases = function() {
     if (self.server()) {
