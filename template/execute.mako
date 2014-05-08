@@ -644,11 +644,13 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
 	}
 	viewModel.createTable();
 	$('#addTableModal').modal('hide');
+	resetNavigator();
   }
   function modalDeleteTable() {
 	viewModel.ddl.server(viewModel.server().name());
 	viewModel.deleteTable();
 	$('#deleteTableModal').modal('hide');
+	resetNavigator();
   }
 
   function modalSaveAsQuery() {
@@ -710,7 +712,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
 
   function renderNavigator() {
  //   $("#navigatorLoader").show();
-    rdbms_getTables(viewModel.server().name(), viewModel.database(), function (data) {  //preload tables for the default db
+	  rdbms_getTables(viewModel.server().name(), viewModel.database(), function (data) {  //preload tables for the default db
 	  $("#navigatorTables").empty();
       $(data.split(" ")).each(function (cnt, table) {
         if ($.trim(table) != "") {
