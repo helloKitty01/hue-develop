@@ -138,9 +138,6 @@ function rdbms_getTables(serverName, databaseName, callback) {
       server: serverName,
       database: databaseName,
       onDataReceived: function (data) {
-        if (typeof RDBMS_AUTOCOMPLETE_GLOBAL_CALLBACK == "function") {
-          RDBMS_AUTOCOMPLETE_GLOBAL_CALLBACK(data);
-        }
         if (data.error) {
           if (typeof RDBMS_AUTOCOMPLETE_FAILS_SILENTLY_ON == "undefined" || data.code === null || RDBMS_AUTOCOMPLETE_FAILS_SILENTLY_ON.indexOf(data.code) == -1){
             $(document).trigger('error', data.error);
