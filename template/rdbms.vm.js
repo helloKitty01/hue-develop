@@ -27,6 +27,11 @@ function RdbmsViewModel() {
 	'tableName':null,
 	'columns': []
   });
+  self.index=ko.mapping.fromJS({
+	'server':-1,
+	'tableName':null,
+	'chosencolumns': []
+  });
   self.query = ko.mapping.fromJS({
     'id': -1,
     'query': '',
@@ -274,7 +279,7 @@ function RdbmsViewModel() {
       type: 'GET',
       success: function(data) {
 	  if(data['status']==0){
-		self.updateDatabases(self.databases()[0]);
+//		self.updateDatabases(self.databases()[0]);
 		$.jHueNotify.info("新表创建成功！");
 	  }
 	  if(data['status']==-1){
@@ -298,7 +303,7 @@ function RdbmsViewModel() {
       type: 'GET',
       success: function(data) {
 	  if(data['status']==0){
-		self.updateDatabases(self.databases()[0]);
+//		self.updateDatabases(self.databases()[0]);
 		$.jHueNotify.info("表"+self.ddl.tableName()+"删除成功！");
 	  }
 	  if(data['status']==-1){
@@ -322,8 +327,31 @@ function RdbmsViewModel() {
       type: 'GET',
       success: function(data) {
 	  if(data['status']==0){
-		self.updateDatabases(self.databases()[0]);
+//		self.updateDatabases(self.databases()[0]);
 		$.jHueNotify.info("列添加成功！");
+	  }
+	  if(data['status']==-1){
+		data['error']=data['message'];
+		$(document).trigger('server.error', data);
+	  }
+      },
+      error: error_fn,
+      data: data
+    };
+    $.ajax(request);
+  };
+  
+   self.addIndex = function() {
+	var data = ko.mapping.toJS(viewModel.index);
+	var request = {
+      url: 'http://10.60.1.149:4567/addindex?userid=1',
+      dataType:'jsonp',
+	  jsonp:'jsonpcallback',
+	  jsonpcallback:'skycallback',
+      type: 'GET',
+      success: function(data) {
+	  if(data['status']==0){
+		$.jHueNotify.info("索引建立成功！");
 	  }
 	  if(data['status']==-1){
 		data['error']=data['message'];

@@ -240,6 +240,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
 		   <ul>
 	       </ul>
 	       <a class="btn" data-bind="click:add_column_1"><i class="fa fa-plus-circle"></i> Add Column</a>
+		   <a class="btn" data-bind="click:delete_column"><i class="fa fa-minus-circle"></i> Delete Column</a>
         </div>
       </div>
     </form>
@@ -247,6 +248,28 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
     <button data-bind="click:modalAddColumn" class="btn btn-primary">${_('Save')}</button>
+  </div>
+</div>
+
+<div id="addIndexModal" class="modal hide fade">
+  <div class="modal-header">
+    <a href="#" class="close" data-dismiss="modal">&times;</a>
+    <h3>添加索引</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label">索引名称</label><input  type="text" class="input-xlarge">
+        <div class="controls">
+		   <ul class='unstyled' id='indexs'></ul>
+		   聚簇索引:<input class='index_checkbox' type=checkbox value='yes'/>非聚簇索引:<input class='index_checkbox' type=checkbox value='no'/>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">${_('Cancel')}</button>
+    <button data-bind="click:modalAddIndex" class="btn btn-primary">创建索引</button>
   </div>
 </div>
 
@@ -650,12 +673,29 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
     viewModel.ddl.tableName(table);
     $('#addColumnModal').modal('show');
   }
+  function ddl_addIndex(table) {
+    viewModel.index.tableName(table);
+	            rdbms_getTableColumns(viewModel.server().name(), viewModel.database(), table, "", function (columns) {
+					  $('#indexs').empty();
+					  $(columns.split(" ")).each(function (iCnt, col) {
+						if ($.trim(col) != "" && $.trim(col) != "*") {
+						  var _column = $("<li class='index'>");
+						  _column.html("<a href='#' style='padding-left:10px' class='colName'><i class='fa fa-columns'></i>"+col+"</a>&nbsp;&nbsp;Chose:<input class='index_isChosen' type=checkbox value='yes' name='iskey[]'/>Include:<input class='index_isIncluded' type=checkbox value='yes'/>Length<input  type='text' class='input-small index_length'>");
+						  _column.appendTo($('#indexs'));
+						}
+					  });
+            });
+    $('#addIndexModal').modal('show');
+  }
   function add_column(){
-        $('#columns').find("ul").append("<li><button onclick='alert(this.parent())' type='button' class='btn'>-</button><input  type='text' class='col' name='columnValues[]'><select class='col_type' name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input class='col_checkbox' type=checkbox value='yes' name='iskey[]'/></li>");
+        $('#columns').find("ul").append("<li><input  type='text' class='col' name='columnValues[]'><select class='col_type' name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input class='col_checkbox' type=checkbox value='yes' name='iskey[]'/></li>");
  }
   function delete_column(obj){
-        //$('#columns').find("ul").append("<li><button onclick='delete_column(this)' type='button' class='btn'>-</button><input  type='text' class='col' name='columnValues[]'><select class='col_type' name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input class='col_checkbox' type=checkbox value='yes' name='iskey[]'/></li>");
-		alert(obj);
+        //$('#columns').find("ul").append("<li><input  type='text' class='col' name='columnValues[]'><select class='col_type' name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input class='col_checkbox' type=checkbox value='yes' name='iskey[]'/></li>");
+		if($('#columns').find("ul li").size()>0){
+			var index=$('#columns').find("ul li").size();
+			$('#columns').find("ul li")[index].remove();
+		}
  }
   function add_column_1(){
         $('#columns_1').find("ul").append("<li><input  type='text' class='col' name='columnValues[]'><select class='col_type' name='types[]'><option value='int'>int</option><option value='string'>String</option><option value='char'>char</option><option value='bigint'>bigint</option><option value='float'>float</option></select>是否主键:Yes:<input class='col_checkbox' type=checkbox value='yes' name='iskey[]'/></li>");
@@ -701,6 +741,24 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
 	viewModel.addColumn();
 	$('#addTableModal').modal('hide');
 	resetNavigator();
+  }
+   function modalAddIndex() {
+	viewModel.index.server(viewModel.server().name());
+	viewModel.index.chosencolumns.removeAll();
+	viewModel.index.includedcolumns.removeAll();
+	for (var i=0;i<$('.index').size();i++)
+	{
+		viewModel.index.chosencolumns.push(
+			{
+				'columnName':$('.colName')[0].text,
+				'isChosen':$('.index_isChosen')[i].checked,
+				'isInclude':$('.index_isIncluded')[i].checked,
+				'lengths':$('.index_length').text
+			}
+		)
+	}
+	viewModel.addIndex();
+	$('#addIndexModal').modal('hide');
   }
 
   function modalSaveAsQuery() {
@@ -767,7 +825,7 @@ ${ commonheader(_('Query'), app_name, user) | n,unicode }
       $(data.split(" ")).each(function (cnt, table) {
         if ($.trim(table) != "") {
           var _table = $("<li>");
-          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='ddl_deleteTable(\"" + table + "\")' type='button' class='btn'>删除</button><button onclick='ddl_addColumn(\"" + table + "\")' type='button' class='btn'>增加列</button><ul class='unstyled'></ul>");
+          _table.html("<a href='#' title='" + table + "'><i class='fa fa-table'></i> " + table + "</a><button onclick='ddl_deleteTable(\"" + table + "\")' type='button' class='btn'>删除表</button><button onclick='ddl_addColumn(\"" + table + "\")' type='button' class='btn'>增加列</button><button onclick='ddl_addIndex(\"" + table + "\")' type='button' class='btn'>增加索引</button><ul class='unstyled'></ul>");
           _table.data("table", table).attr("id", "navigatorTables_" + table);
           _table.find("a").on("dblclick", function () {
             codeMirror.replaceSelection($.trim($(this).text()) + ' ');
